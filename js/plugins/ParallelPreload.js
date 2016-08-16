@@ -6,9 +6,6 @@
 // http://opensource.org/licenses/mit-license.php
 // ----------------------------------------------------------------------------
 // Version
-// 2.0.0 2016/08/05 本体v1.3.0対応（1.2.0では使えなくなります）
-//                  素材のプリロード時に発生するエラー(対象が存在しない等)を抑制するよう仕様変更
-// 1.1.2 2016/07/23 コードのリファクタリングとヘルプの修正
 // 1.1.1 2016/04/29 ログ出力を無効化するパラメータを追加
 // 1.1.0 2016/04/28 音声素材の並列プリロードに対応
 //                  他のプラグインの影響等で、特定のシーンでプリロードが止まってしまう問題を修正
@@ -58,11 +55,8 @@
  * そのため、大量の画像を指定するとロード完了までに時間が掛かり
  * 効果が薄くなります。
  *
- * chromeでプレーする場合、大量に画像をロードすると処理速度が著しく低下します。
- * （本プラグインなしでも一定時間プレーすると発生する本体側の問題です）
- * その場合、下記を参考に対策プラグインの導入をお願いします。(本体ver1.2.0の場合)
- *
- * http://fanblogs.jp/tabirpglab/archive/422/0
+ * また、スマートフォン等メモリに限りがあるデバイスで実行する場合、
+ * 大量の画像のプリロードは動作不良の原因となります。
  *
  * プリロードできるのは、色相が0の画像データのみです。
  * どうしても色相を変えた画像をロードしたい場合は「MV_Project.json」を
@@ -70,6 +64,9 @@
  *
  * 例：色相が「100」の「Bat.png」をプリロードしたい場合
  * "Bat" -> "Bat:100"
+ *
+ * なお、ブラウザプレーの場合、ローディング時間の大半は画像の
+ * ダウンロード時間なので、よほどのことがなければ色相の変更は不要です。
  *
  * 注意！
  * このプラグインを適用したゲームをモバイルネットワークでプレーすると、
@@ -200,7 +197,7 @@ var $dataMaterials = null;
     };
 
     DataManager.loadAudio = function(loadHandler, filePathInfo) {
-        if (AudioManager.shouldUseHtml5Audio()) return;
+        if (AudioManager.shouldUseHtml5Audio() || Utils.isNwjs()) return;
         var audio = AudioManager[loadHandler](filePathInfo[0], filePathInfo[1]);
         if (Utils.isNwjs()) {
             localIntervalCount = paramLoadInterval;
@@ -261,33 +258,13 @@ var $dataMaterials = null;
     ImageManager.isReady = function() {
         var result = _ImageManager_isReady.apply(this, arguments);
         if (result) return true;
-        for (var key in this.cache._inner) {
-            if (!this.cache._inner.hasOwnProperty(key)) continue;
-            var bitmap = this.cache._inner[key].item;
+        for (var key in this._cache) {
+            var bitmap = this._cache[key];
             if (!bitmap.isReady() && !bitmap._isNeedLagDraw) {
                 return false;
             }
         }
         return true;
-    };
-
-    var _ImageManager_isReady2 = ImageManager.isReady;
-    ImageManager.isReady      = function() {
-        var result = false;
-        try {
-            result = _ImageManager_isReady2.apply(this, arguments);
-        } catch (e) {
-            for (var key in this.cache._inner) {
-                if (!this.cache._inner.hasOwnProperty(key)) continue;
-                var bitmap = this.cache._inner[key].item;
-                if (bitmap.isError() && bitmap._isNeedLagDraw) {
-                    bitmap.eraseError();
-                    delete this.cache._inner[key];
-                }
-            }
-            result = _ImageManager_isReady2.apply(this, arguments);
-        }
-        return result;
     };
 
     //=============================================================================
@@ -326,30 +303,13 @@ var $dataMaterials = null;
     };
 
     Bitmap.prototype.drawImageIfNeed = function() {
-        if (this._isNeedLagDraw) {
-            if (this.isReady()) {
-                this.drawImage();
-            } else {
-                this._isNeedLagDraw = false;
-            }
-        }
+        if (this._isNeedLagDraw) this.drawImage();
     };
 
     var _Bitmap_blt = Bitmap.prototype.blt;
     Bitmap.prototype.blt = function(source, sx, sy, sw, sh, dx, dy, dw, dh) {
         source.drawImageIfNeed();
         _Bitmap_blt.apply(this, arguments);
-    };
-
-    var _Bitmap_bltImage = Bitmap.prototype.bltImage;
-    Bitmap.prototype.bltImage = function(source, sx, sy, sw, sh, dx, dy, dw, dh) {
-        source.drawImageIfNeed();
-        _Bitmap_bltImage.apply(this, arguments);
-    };
-
-    Bitmap.prototype.eraseError = function() {
-        this._hasError  = false;
-        this._isLoading = false;
     };
 
     //=============================================================================
@@ -370,20 +330,6 @@ var $dataMaterials = null;
     TilingSprite.prototype._onBitmapLoad = function() {
         if (this._bitmap) this._bitmap.drawImageIfNeed();
         _TilingSprite__onBitmapLoad.apply(this, arguments);
-    };
-
-    //=============================================================================
-    // Spriteset_Map
-    //  タイルセットはすぐに描画します。
-    //=============================================================================
-    var _Spriteset_Map_loadTileset = Spriteset_Map.prototype.loadTileset;
-    Spriteset_Map.prototype.loadTileset = function() {
-        _Spriteset_Map_loadTileset.apply(this, arguments);
-        if (this._tileset) {
-            this._tilemap.bitmaps.forEach(function(bitmap) {
-                bitmap.drawImageIfNeed();
-            });
-        }
     };
 })();
 

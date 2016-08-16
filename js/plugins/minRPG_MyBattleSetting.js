@@ -47,7 +47,7 @@
  * 2016/03/17 HP・MPのダメージポップアップ表示を、別のプラグインminRPG_DamageEffect.jsに移行。こちらは回避判定に特化。
  * 
  *【連作先】
- * merusaia (http://merusaia.higoyomi.com/)が雛形を作成しました。バグ報告などはtwitter(https://twitter.com/merusaia/)までお気軽に。
+ * merusaia (http://merusaia.higoyomi.com/)が雛形を作成しました。バグ報告などはtwitter（@merusaia）までお気軽に。
  *
  *【謝礼】
  * トリアコンタンさん (http://triacontane.blogspot.jp/)さんのおかげです。感謝！

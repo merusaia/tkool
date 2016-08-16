@@ -1,5 +1,5 @@
 //=============================================================================
-// rpg_managers.js v1.3.0
+// rpg_managers.js v1.1.0
 //=============================================================================
 
 //-----------------------------------------------------------------------------
@@ -141,11 +141,6 @@ DataManager.onLoad = function(object) {
                 this.extractMetadata(data);
             }
         }
-    }
-    if (object === $dataSystem) {
-        Decrypter.hasEncryptedImages = !!object.hasEncryptedImages;
-        Decrypter.hasEncryptedAudio = !!object.hasEncryptedAudio;
-        Scene_Boot.loadSystemImages();
     }
 };
 
@@ -660,7 +655,7 @@ StorageManager.restoreBackup = function(savefileId) {
             var compressed = LZString.compressToBase64(data);
             var key = this.webStorageKey(savefileId);
             localStorage.setItem(key, compressed);
-            localStorage.removeItem(key + "bak");
+            localStorage.removeItem(key + "bak","");
         }
     }
 };
@@ -752,10 +747,11 @@ StorageManager.removeWebStorage = function(savefileId) {
 };
 
 StorageManager.localFileDirectoryPath = function() {
-    var path = require('path');
-
-    var base = path.dirname(process.mainModule.filename);
-    return path.join(base, 'save/');
+    var path = window.location.pathname.replace(/(\/www|)\/[^\/]*$/, '/save/');
+    if (path.match(/^\/([A-Z]\:)/)) {
+        path = path.slice(1);
+    }
+    return decodeURIComponent(path);
 };
 
 StorageManager.localFilePath = function(savefileId) {
@@ -789,7 +785,7 @@ function ImageManager() {
     throw new Error('This is a static class');
 }
 
-ImageManager.cache = new CacheMap(ImageManager);
+ImageManager._cache = {};
 
 ImageManager.loadAnimation = function(filename, hue) {
     return this.loadBitmap('img/animations/', filename, hue, true);
@@ -859,34 +855,31 @@ ImageManager.loadBitmap = function(folder, filename, hue, smooth) {
 };
 
 ImageManager.loadEmptyBitmap = function() {
-    var empty = this.cache.getItem('empty');
-    if (!empty) {
-        empty = new Bitmap();
-        this.cache.setItem('empty', empty);
+    if (!this._cache[null]) {
+        this._cache[null] = new Bitmap();
     }
-    return empty;
+    return this._cache[null];
 };
 
 ImageManager.loadNormalBitmap = function(path, hue) {
     var key = path + ':' + hue;
-    var bitmap = this.cache.getItem(key);
-    if (!bitmap) {
-        bitmap = Bitmap.load(path);
+    if (!this._cache[key]) {
+        var bitmap = Bitmap.load(path);
         bitmap.addLoadListener(function() {
             bitmap.rotateHue(hue);
         });
-        this.cache.setItem(key, bitmap);
+        this._cache[key] = bitmap;
     }
-    return bitmap;
+    return this._cache[key];
 };
 
 ImageManager.clear = function() {
-    this.cache.clear();
+    this._cache = {};
 };
 
 ImageManager.isReady = function() {
-    for (var key in this.cache._inner) {
-        var bitmap = this.cache._inner[key].item;
+    for (var key in this._cache) {
+        var bitmap = this._cache[key];
         if (bitmap.isError()) {
             throw new Error('Failed to load: ' + bitmap.url);
         }
@@ -933,7 +926,6 @@ AudioManager._seBuffers      = [];
 AudioManager._staticBuffers  = [];
 AudioManager._replayFadeTime = 0.5;
 AudioManager._path           = 'audio/';
-AudioManager._blobUrl        = null;
 
 Object.defineProperty(AudioManager, 'bgmVolume', {
     get: function() {
@@ -983,35 +975,13 @@ AudioManager.playBgm = function(bgm, pos) {
         this.updateBgmParameters(bgm);
     } else {
         this.stopBgm();
-        if (bgm.name) { 
-            if(Decrypter.hasEncryptedAudio && this.shouldUseHtml5Audio()){
-                this.playEncryptedBgm(bgm, pos);
-            }
-            else {
-                this._bgmBuffer = this.createBuffer('bgm', bgm.name);
-                this.updateBgmParameters(bgm);
-                if (!this._meBuffer) {
-                    this._bgmBuffer.play(true, pos || 0);
-                }
+        if (bgm.name) {
+            this._bgmBuffer = this.createBuffer('bgm', bgm.name);
+            this.updateBgmParameters(bgm);
+            if (!this._meBuffer) {
+                this._bgmBuffer.play(true, pos || 0);
             }
         }
-    }
-    this.updateCurrentBgm(bgm, pos);
-};
-
-AudioManager.playEncryptedBgm = function(bgm, pos) {
-    var ext = this.audioFileExt();
-    var url = this._path + 'bgm/' + encodeURIComponent(bgm.name) + ext;
-    url = Decrypter.extToEncryptExt(url);
-    Decrypter.decryptHTML5Audio(url, bgm, pos);
-};
-
-AudioManager.createDecryptBuffer = function(url, bgm, pos){
-    this._blobUrl = url;
-    this._bgmBuffer = this.createBuffer('bgm', bgm.name);
-    this.updateBgmParameters(bgm);
-    if (!this._meBuffer) {
-        this._bgmBuffer.play(true, pos || 0);
     }
     this.updateCurrentBgm(bgm, pos);
 };
@@ -1271,8 +1241,7 @@ AudioManager.createBuffer = function(folder, name) {
     var ext = this.audioFileExt();
     var url = this._path + folder + '/' + encodeURIComponent(name) + ext;
     if (this.shouldUseHtml5Audio() && folder === 'bgm') {
-        if(this._blobUrl) Html5Audio.setup(this._blobUrl);
-        else Html5Audio.setup(url);
+        Html5Audio.setup(url);
         return Html5Audio;
     } else {
         return new WebAudio(url);
@@ -1298,7 +1267,7 @@ AudioManager.audioFileExt = function() {
 AudioManager.shouldUseHtml5Audio = function() {
     // We use HTML5 Audio to play BGM instead of Web Audio API
     // because decodeAudioData() is very slow on Android Chrome.
-    return Utils.isAndroidChrome() && !Decrypter.hasEncryptedAudio;
+    return Utils.isAndroidChrome();
 };
 
 AudioManager.checkErrors = function() {
@@ -1708,9 +1677,6 @@ SceneManager.requestUpdate = function() {
 SceneManager.update = function() {
     try {
         this.tickStart();
-        if (Utils.isMobileSafari()) {
-            this.updateInputData();
-        }
         this.updateMain();
         this.tickEnd();
     } catch (e) {
@@ -1736,16 +1702,16 @@ SceneManager.onError = function(e) {
 SceneManager.onKeyDown = function(event) {
     if (!event.ctrlKey && !event.altKey) {
         switch (event.keyCode) {
-        case 116:   // F5
-            if (Utils.isNwjs()) {
-                location.reload();
-            }
-            break;
-        case 119:   // F8
-            if (Utils.isNwjs() && Utils.isOptionValid('test')) {
-                require('nw.gui').Window.get().showDevTools();
-            }
-            break;
+            case 116:   // F5
+                if (Utils.isNwjs()) {
+                    location.reload();
+                }
+                break;
+            case 119:   // F8
+                if (Utils.isNwjs() && Utils.isOptionValid('test')) {
+                    require('nw.gui').Window.get().showDevTools();
+                }
+                break;
         }
     }
 };
@@ -1775,28 +1741,21 @@ SceneManager.updateInputData = function() {
 };
 
 SceneManager.updateMain = function() {
-    if (Utils.isMobileSafari()) {
+
+    var newTime = this._getTimeInMs();
+    var fTime =  (newTime - this._currentTime) / 1000;
+    if (fTime > 0.25) fTime = 0.25;
+    this._currentTime = newTime;
+    this._accumulator += fTime;
+
+    while (this._accumulator >= this._deltaTime) {
+        this.updateInputData();
         this.changeScene();
         this.updateScene();
-    } else {
-        var newTime = this._getTimeInMs();
-        var fTime = (newTime - this._currentTime) / 1000;
-        if (fTime > 0.25) fTime = 0.25;
-        this._currentTime = newTime;
-        this._accumulator += fTime;
-        while (this._accumulator >= this._deltaTime) {
-            this.updateInputData();
-            this.changeScene();
-            this.updateScene();
-            this._accumulator -= this._deltaTime;
-        }
+        this._accumulator -= this._deltaTime;
     }
     this.renderScene();
     this.requestUpdate();
-};
-
-SceneManager.updateManagers = function(ticks, delta) {
-    ImageManager.cache.update(ticks, delta);
 };
 
 SceneManager.changeScene = function() {
@@ -1922,6 +1881,7 @@ SceneManager.snapForBackground = function() {
 SceneManager.backgroundBitmap = function() {
     return this._backgroundBitmap;
 };
+
 
 //-----------------------------------------------------------------------------
 // BattleManager

@@ -1,14 +1,3 @@
-//=============================================================================
-// liply_WinChrome_scroll_patch.js
-// ----------------------------------------------------------------------------
-// Copyright (c) 2016 liply
-// This plugin is released under the MIT License.
-// http://opensource.org/licenses/mit-license.php
-// ----------------------------------------------------------------------------
-// [Blog]   : http://liply.net/
-// [Twitter]: https://twitter.com/liplynet/
-// [GitHub] : https://github.com/liply/
-//=============================================================================
 /*:
  * @plugindesc Windows Chrome scroll patch
  * @author liply
@@ -20,28 +9,7 @@
  * @o_ggy
  * This plugin is released under the MIT License.
  */
-/*:ja
- * @plugindesc Windows Chrome scroll patch
- * @author liply
- * 
- * @help 
- *  このプラグインは、Windows Chrome scroll patch パッチです。
- *  2016/4/6 時点の Windows Chrome にて、ツクールMVコアが不要なメモリを使うのを修正するプラグインです。
- * 
- * 【競合について】
- * rpg_core.jsの Tilemap.prototype._createLayers を上書きしています。
- *   → このメソッドを宣言しているプラグインと一緒に使うと競合しますので、注意してください。
- * ・その他、特に見つかっていません。見つかりましたら、下記まで報告願います。
- *
- * （日本語ヘルプは、merusaiaが追記しました。
- *  内容のご質問は https://twitter.com/liplynet/ 
- *  ヘルプの誤字脱字・その他要望は https://twitter.com/merusaia/ まで。）
- * 
- * 【利用規約】
- * MITライセンスです。詳細: http://wisdommingle.com/mit-license/
- */
- 
- //License: MIT
+
 (function(){
 Tilemap.prototype._createLayers = function() {
     var width = this._width;
