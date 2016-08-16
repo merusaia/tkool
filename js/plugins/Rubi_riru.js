@@ -67,7 +67,7 @@ Game_Message.prototype.rubyDictionary = function() {
 var ruby_dic = 
 [
 
-// ここは、メルサイアが追加しました。ルビ間違い、バグ報告・お問い合わせは、twitter(https://twitter.com/merusaia/) まで。
+// ここは、メルサイアが追加　(ルビ間違い、バグ報告・お問い合わせは、twitter @merusaia まで。)
 // 以下、メモ
 // ・["検索でヒットさせる文字", "最初の送り仮名までのよみがな"]の形式で書いてね。
 // 　→　["響き合える","ひび"]とすると、「響」のうえに、「ひび」というよみがなが振られるよ。

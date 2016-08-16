@@ -47,7 +47,7 @@
  *
  * 
  *【連作先】
- * merusaia (http://merusaia.higoyomi.com/)が雛形を作成しました。バグ報告などはtwitter(https://twitter.com/merusaia/)までお気軽に。
+ * merusaia (http://merusaia.higoyomi.com/)が雛形を作成しました。バグ報告などはtwitter（@merusaia）までお気軽に。
  *
  *【謝礼】
  * kotonoha (http://ktnh5108.pw/)さんの記事を参考につくらせていただきました。感謝！
@@ -150,7 +150,7 @@
                   if(DamagePopUp_FlashEffectColor != null){ // undefinedでもnullでもなかったら、
                         // 文字列（"a, b, c, d"）を、数値配列_array = [a, b, c, d]に変換します。メモ: 一行で書きたいなら、var _array = eval('[' + _string + ']')を使っても出来ますが、低速で非推奨とのことで、めんどくさいですが自前でつくっています。
                         var _array = []; // 要素数0の配列を定義
-                        var _items = DamagePopUp_FlashEffectColor.split(','); // 「,」で分割した文字列配列を作成
+                        var _items = DamagePopUp_FlashEffectColor.split(","); // 「,」で分割した文字列配列を作成
                         for( var i=0 ; i<_items.length ; i++ ){ // それぞれの値を数値として格納
                             _array.push(_items[i]);
                         }

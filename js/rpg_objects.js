@@ -1,5 +1,5 @@
 //=============================================================================
-// rpg_objects.js v1.3.0
+// rpg_objects.js v1.1.0
 //=============================================================================
 
 //-----------------------------------------------------------------------------
@@ -555,11 +555,11 @@ Game_Variables.prototype.clear = function() {
 };
 
 Game_Variables.prototype.value = function(variableId) {
-    return this._data[variableId] || 0;
+    return this._data[variableId] || 0; // 「変数値がnullやundefinedや""や0やNaNなら、0を返す。それ以外なら変数値を返す」 → 0割りやInfinity割りに気をつけてねっ
 };
 
 Game_Variables.prototype.setValue = function(variableId, value) {
-    if (variableId > 0 && variableId < $dataSystem.variables.length) {
+    if (variableId > 0 && variableId < $dataSystem.variables.length) { // 「nがインデックス範囲内で、かつ、代入値がNumber型だったらMath.floor(value)で整数化して格納、それ以外なら何もしない」　→ 少数値を入れるとしたら文字列で無理やり突っ込むしかないよっ
         if (typeof value === 'number') {
             value = Math.floor(value);
         }
@@ -1693,8 +1693,8 @@ Game_Action.prototype.evalDamageFormula = function(target) {
         var v = $gameVariables._data;
         var sign = ([3, 4].contains(item.damage.type) ? -1 : 1);
         var value = Math.max(eval(item.damage.formula), 0) * sign;
-		if (isNaN(value)) value = 0;
-		return value;
+        if (isNaN(value)) value = 0;
+        return value;
     } catch (e) {
         return 0;
     }
@@ -2621,7 +2621,7 @@ Game_BattlerBase.prototype.mpRate = function() {
 };
 
 Game_BattlerBase.prototype.tpRate = function() {
-    return this.tp / this.maxTp();
+    return this.tp / 100;
 };
 
 Game_BattlerBase.prototype.hide = function() {

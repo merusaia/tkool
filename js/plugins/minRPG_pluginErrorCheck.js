@@ -8,7 +8,7 @@
  * @version 1.0 更新日時:2016/5/14 初版
  * 
  * 【更新履歴:  詳細（更新者 連絡先）】
- * 2016/05/14: 初版公開（merusaia http://merusaia.higoyomi.com/)が雛形を作成しました。バグ報告などはtwitter(https://twitter.com/merusaia/)までお気軽に。）
+ * 2016/05/14: 初版公開（merusaia http://merusaia.higoyomi.com/)が雛形を作成しました。バグ報告などはtwitter:@merusaiaまでお気軽に。）
  * 
  * @help 自分のゲーム用の、プラグインチェック用のプラグインです。
  * プラグイン競合で苦しんだ人以外は何を言ってるかわからないと思いますが、

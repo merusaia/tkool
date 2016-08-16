@@ -7,11 +7,24 @@
 //=============================================================================
 
 /*:
- * @plugindesc 未使用素材ファイル削除 ver1.02
+ * @plugindesc SAN_FileDeleter ver1.01
+ * @author Sanshiro https://twitter.com/rev2nym
+ * 
+ * @help
+ * It's possible to commercial use, distribute, and modify under the MIT license.
+ * But, don't eliminate and don't alter a comment of the beginning.
+ * If it's good, please indicate an author name on credit.
+ * 
+ * Author doesn't shoulder any responsibility in all kind of damage by using this.
+ * And please don't expect support. X(
+ *
+ */
+
+/*:ja
+ * @plugindesc 未使用素材ファイル削除 ver1.01
  * 使用前に必ずバックアップを取ってください。
  * @author サンシロ https://twitter.com/rev2nym
- * @version 1.02 2016/08/13 ディレクトリパスに'www'が含まれると正常に動作しない不具合を修正。
- * 1.01 2016/07/06 '$'や'!'等を含む名前のファイルを削除する不具合を修正。その他リファクタリング。
+ * @version 1.01 2016/07/06 '$'や'!'等を含む名前のファイルを削除する不具合を修正。その他リファクタリング。
  * 1.00 2016/07/05 公開。
  * 
  * @help
@@ -36,12 +49,13 @@
  * サポートは期待しないでください＞＜。
  */
 
+
 var Imported = Imported || {};
 Imported.SAN_FileDeleter = true;
 
 var Sanshiro = Sanshiro || {};
 Sanshiro.FileDeleter = Sanshiro.FileDeleter || {};
-Sanshiro.FileDeleter.version = '1.02';
+Sanshiro.FileDeleter.version = '1.01';
 
 (function (SAN) {
 'use strict';
@@ -51,13 +65,11 @@ Sanshiro.FileDeleter.version = '1.02';
 //
 // ファイルデリータ
 
-function FileDeleter () {
-    throw new Error('This is a static class');
-};
+function FileDeleter () {};
 
 // インデックスファイルディレクトリパス
 FileDeleter.indexDirectoryPath = function () {
-    var path = window.location.pathname.replace(/\/[^\/]*$/, '');
+    var path = window.location.pathname.replace(/(\/www|)\/[^\/]*$/, '');
     if (path.match(/^\/([A-Z]\:)/)) {
         path = path.slice(1);
     }
@@ -184,9 +196,9 @@ FileDeleter.deleteFiles = function () {
 // インタープリター
 
 // プラグインコマンド
-var _Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
+SAN.FileDeleter.Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
 Game_Interpreter.prototype.pluginCommand = function (command, args) {
-    _Game_Interpreter_pluginCommand.call(this, command, args);
+    SAN.FileDeleter.Game_Interpreter_pluginCommand.call(this, command, args);
     if (command === 'SAN_FileDeleter') {
         switch (args[0]) {
         case 'DeleteFiles':

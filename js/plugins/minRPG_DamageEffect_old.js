@@ -40,7 +40,7 @@
  * 2016/03/17 初版公開（merusia）
  * 
  *【連作先】
- * merusaia (http://merusaia.higoyomi.com/)が雛形を作成しました。バグ報告などはtwitter(https://twitter.com/merusaia/)までお気軽に。
+ * merusaia (http://merusaia.higoyomi.com/)が雛形を作成しました。バグ報告などはtwitter（@merusaia）までお気軽に。
  *
  *【謝礼】
  * kotonoha (http://ktnh5108.pw/)さんの記事を参考につくらせていただきました。感謝！
