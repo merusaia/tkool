@@ -8,7 +8,7 @@
  *
  * @help 気をつけろ！( ・´ｰ・｀) by Tachiさん
  *  
- *  ※以下、メルサイアが追記  （バグ報告などはtwitter:@merusaia  https://twitter.com/merusaia までお気軽に）
+ *  ※以下、メルサイアが追記しました。ヘルプ・誤字脱字・要望・バグ報告などはtwitter:(https://twitter.com/merusaia/)までお気軽に。
  * 
  *  【更新履歴:  詳細（更新者 連絡先）】
  * 2016/01/16: Tachiさんのプラグインが素晴らしすぎるので、ソース内部にコメントを入れて解読を始める。Tachi2と命名。 （merusaia）
