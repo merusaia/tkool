@@ -10,7 +10,7 @@ var $plugins =
 {"name":"SetupOptionCustomize","status":true,"description":"起動オプション調整プラグイン","parameters":{"描画モード":"0","テストプレー":"ON","FPS表示":"ON","オーディオ無効":"OFF","任意オプション":"","ユーザオプション無効":"OFF"}},
 {"name":"CrossSave","status":true,"description":"クロスセーブプラグイン","parameters":{"ユーザID":"merusaia665","ロード名称":"ネットワークロード","セーブ名称":"ネットワークセーブ","パスワード桁数":"4","説明文":"ネットワークパスワードを入力してください。","タイトルに追加":"ON","ファイルに追加":"ON","背景ピクチャ":"","認証ファイル形式":"ON"}},
 {"name":"SyncVariable","status":true,"description":"ユーザ間の変数同期プラグイン","parameters":{"ユーザID":"merusaia665","同期開始変数番号":"1000","同期終了変数番号":"1599","同期開始スイッチ番号":"1000","同期終了スイッチ番号":"1599","認証ファイル形式":"ON"}},
-{"name":"ParallelPreload","status":true,"description":"並列プリロードプラグイン","parameters":{"素材一覧データ":"MV_Project","ロード間隔":"3","ログ出力":"OFF"}},
+{"name":"ParallelPreload","status":false,"description":"並列プリロードプラグイン","parameters":{"素材一覧データ":"MV_Project","ロード間隔":"3","ログ出力":"OFF"}},
 {"name":"ThroughFailedToLoad","status":true,"description":"ロード失敗エラーのすり抜けプラグイン","parameters":{"テストプレー時無効":"ON"}},
 {"name":"DevToolsManage","status":true,"description":"デベロッパツール管理プラグイン","parameters":{"開始時に起動":"ON","常に前面表示":"OFF","デベロッパツール表示位置":"0,0,800,600","最小化切替キー":"F8","リロードキー":"F12","画面の左寄せキー":"F11","高速化切替キー":"F10","強制戦闘勝利キー":"F7","スクリプト実行キー":"F6","FPS表示":"OFF","タイトルカット":"OFF","高速開始":"OFF","高速スピード":"8","モバイル偽装":"OFF"}},
 {"name":"CustomizeErrorScreen","status":true,"description":"エラー画面表示改善プラグイン","parameters":{"メインメッセージ":"エラーでゲームが進められなくなってしまいました。ご不便をお掛けしてごめんなさい‥。可能でしたら、原因を調査いたしますので、この画面を貼り付けて、下記までリプライ/DM送ってもらえるとありがたいです。","ハイパーリンク":"https://twitter.com/merusaia","詳細情報出力":"ON"}},
